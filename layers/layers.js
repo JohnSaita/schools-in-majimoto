@@ -1,5 +1,5 @@
 ol.proj.proj4.register(proj4);
-ol.proj.get("EPSG:32336").setExtent([766241.980310, 9814380.886023, 845805.900439, 9870115.214153]);
+ol.proj.get("EPSG:32336").setExtent([766459.692529, 9814281.925923, 843529.818146, 9856082.672021]);
 var wms_layers = [];
 
 
@@ -37,7 +37,7 @@ lyr_OpenStreetMap_0.setVisible(true);lyr_schools_in_majimoto_1.setVisible(true);
 var layersList = [lyr_OpenStreetMap_0,lyr_schools_in_majimoto_1];
 lyr_schools_in_majimoto_1.set('fieldAliases', {'id': 'id', 'Schools': 'Schools', });
 lyr_schools_in_majimoto_1.set('fieldImages', {'id': 'Hidden', 'Schools': 'TextEdit', });
-lyr_schools_in_majimoto_1.set('fieldLabels', {'Schools': 'no label', });
+lyr_schools_in_majimoto_1.set('fieldLabels', {'Schools': 'inline label - always visible', });
 lyr_schools_in_majimoto_1.on('precompose', function(evt) {
     evt.context.globalCompositeOperation = 'normal';
 });

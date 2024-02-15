@@ -9,7 +9,7 @@ var style_schools_in_majimoto_1 = function(feature, resolution){
     var value = ""
     var labelText = "";
     var clusteredFeatures = feature.get("features");
-    var labelFont = "2.6px \'MS Shell Dlg 2\', sans-serif";
+    var labelFont = "6.5px \'MS Shell Dlg 2\', sans-serif";
     var labelFill = "#000000";
     var bufferColor = "";
     var bufferWidth = 0;
@@ -33,8 +33,8 @@ var style_schools_in_majimoto_1 = function(feature, resolution){
     var style = [ new ol.style.Style({
         image: new ol.style.Icon({
                   imgSize: [512, 512],
-                  scale: 0.1484375,
-                  anchor: [38, 38],
+                  scale: 0.037109375,
+                  anchor: [9, 9],
                   anchorXUnits: "pixels",
                   anchorYUnits: "pixels",
                   rotation: 0.0,

@@ -112,7 +112,7 @@ var map = new ol.Map({
     overlays: [overlayPopup],
     layers: layersList,
     view: new ol.View({
-         maxZoom: 28, minZoom: 1, projection: new ol.proj.Projection({
+         maxZoom: 28, minZoom: 10, projection: new ol.proj.Projection({
             code: 'EPSG:32336',
             extent: [-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789],
             units: 'm'})
@@ -122,20 +122,7 @@ var map = new ol.Map({
 var layerSwitcher = new ol.control.LayerSwitcher({tipLabel: "Layers"});
 map.addControl(layerSwitcher);
 
-    var searchLayer = new SearchLayer({
-      layer: lyr_schools_in_majimoto_1,
-      colName: 'Schools',
-      zoom: 10,
-      collapsed: true,
-      map: map
-    });
-
-    map.addControl(searchLayer);
-    document.getElementsByClassName('search-layer')[0]
-    .getElementsByTagName('button')[0].className +=
-    ' fa fa-binoculars';
-    
-map.getView().fit([766241.980310, 9814380.886023, 845805.900439, 9870115.214153], map.getSize());
+map.getView().fit([766459.692529, 9814281.925923, 843529.818146, 9856082.672021], map.getSize());
 
 var NO_POPUP = 0
 var ALL_FIELDS = 1
