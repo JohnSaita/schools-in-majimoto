@@ -201,3 +201,63 @@ map.addControl(new ol.control.Control({element: geolocateControl}));
 var style = document.createElement('style');
 style.textContent = '.geolocate-control { position: absolute; top: 100px; left: 5px; } .geolocate-button { width: 32px; height: 32px; cursor: pointer; }';
 document.head.appendChild(style);
+// Function to add schools to the map
+function addSchools(schoolsData) {
+  var schoolsLayer = new ol.layer.Vector({
+    source: new ol.source.Vector({
+      features: (new ol.format.GeoJSON()).readFeatures(schoolsData, {
+        featureProjection: 'EPSG:3857'
+      })
+    }),
+    style: function(feature) {
+      return new ol.style.Style({
+        image: new ol.style.Icon({
+          anchor: [0.5, 1],
+          src: 'https://openlayers.org/en/latest/examples/data/icon.png'
+        }),
+        text: new ol.style.Text({
+          text: feature.get('name'),
+          offsetY: -20,
+          fill: new ol.style.Fill({ color: '#000' }),
+          stroke: new ol.style.Stroke({ color: '#fff', width: 2 })
+        })
+      });
+    }
+  });
+
+  // Function to open Google Maps directions in a new tab
+  function openDirections(coordinates, destinationName) {
+    var [longitude, latitude] = ol.proj.toLonLat(coordinates);
+    var googleMapsURL = 'https://www.google.com/maps/dir/?api=1';
+    googleMapsURL += '&destination=' + latitude + ',' + longitude;
+    googleMapsURL += '&destination_place_id=' + destinationName;
+    window.open(googleMapsURL, '_blank');
+  }
+
+  // Function to show a popup with school information and a button to show directions
+  function showPopup(evt) {
+    var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      return feature;
+    });
+    if (feature && feature.get('name')) {
+      var coordinates = feature.getGeometry().getCoordinates();
+      var schoolName = feature.get('name');
+      var content = document.createElement('div');
+      content.innerHTML = '<p>School: ' + schoolName + '</p><button>Show Directions on GoogleMaps</button>';
+      var popup = new ol.Overlay({
+        element: content,
+        positioning: 'bottom-center',
+        stopEvent: false,
+        offset: [0, -20]
+      });
+      map.addOverlay(popup);
+      popup.setPosition(coordinates);
+      content.querySelector('button').addEventListener('click', function() {
+        openDirections(coordinates, schoolName);
+      });
+    }
+  }
+
+  map.addLayer(schoolsLayer);
+  map.on('click', showPopup);
+}
