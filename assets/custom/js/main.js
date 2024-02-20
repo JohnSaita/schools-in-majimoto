@@ -224,44 +224,48 @@ function addSchools(schoolsData) {
       });
     }
   });
+// Add Geolocation control to the map
+var geolocation = new ol.Geolocation({
+  trackingOptions: {
+    enableHighAccuracy: true
+  },
+  projection: map.getView().getProjection()
+});
 
-  // Function to open Google Maps directions in a new tab
-  function openDirections(coordinates, destinationName) {
-    var [longitude, latitude] = ol.proj.toLonLat(coordinates);
-    var googleMapsURL = 'https://www.google.com/maps/dir/?api=1';
-    googleMapsURL += '&destination=' + latitude + ',' + longitude;
-    googleMapsURL += '&destination_place_id=' + destinationName;
-    window.open(googleMapsURL, '_blank');
-  }
-
-  // Function to show a popup with school information and a button to show directions
-  function showPopup(evt) {
-    var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      return feature;
-    });
-    if (feature && feature.get('name')) {
-      var coordinates = feature.getGeometry().getCoordinates();
-      var schoolName = feature.get('name');
-      var content = document.createElement('div');
-      content.innerHTML = '<p>School: ' + schoolName + '</p><button>Show Direction on Google Maps</button><button class="popup-closer">X</button>';
-      var popup = new ol.Overlay({
-        element: content,
-        positioning: 'bottom-center',
-        stopEvent: false,
-        offset: [0, -20]
-      });
-      map.addOverlay(popup);
-      popup.setPosition(coordinates);
-       // Add event listener for closer button
-    content.querySelector('.popup-closer').addEventListener('click', function() {
-      map.removeOverlay(popup);
-    });
-      content.querySelector('button').addEventListener('click', function() {
-        openDirections(coordinates, schoolName);
-      });
+var geolocationControl = new ol.control.Control({
+  element: document.createElement('button'),
+  handleClick: function() {
+    var position = geolocation.getPosition();
+    if (position) {
+      map.getView().setCenter(position);
+      map.getView().setZoom(15);
     }
   }
+});
+geolocationControl.element.className = 'ol-geolocation';
+geolocationControl.element.title = 'Get your location';
+map.addControl(geolocationControl);
 
+// Example event listener for clicking on a school
+map.on('click', function(evt) {
+  map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+    var schoolCoordinates = feature.getGeometry().getCoordinates();
+    var schoolName = feature.get('name'); // Assuming you have stored the school name in a property
+    redirectToGoogleMaps(schoolCoordinates, schoolName);
+  });
+});
+
+// Function to redirect to Google Maps for directions
+function redirectToGoogleMaps(coordinates, destinationName) {
+  var [longitude, latitude] = ol.proj.toLonLat(coordinates);
+
+  // Constructing Google Maps directions URL
+  var googleMapsURL = 'https://www.google.com/maps/dir/?api=1';
+  googleMapsURL += '&destination=' + latitude + ',' + longitude;
+  googleMapsURL += '&destination_place_id=' + destinationName;
+
+  // Open Google Maps in a new tab
+  window.open(googleMapsURL, '_blank');
+}
   map.addLayer(schoolsLayer);
-  map.on('click', showPopup);
 }
