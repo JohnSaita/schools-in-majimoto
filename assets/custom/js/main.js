@@ -199,5 +199,5 @@ map.addControl(new ol.control.Control({element: geolocateControl}));
 
 // Styling for the button
 var style = document.createElement('style');
-style.textContent = '.geolocate-control { position: absolute; top: 64px; left: 5px; } .geolocate-button { width: 32px; height: 32px; cursor: pointer; }';
+style.textContent = '.geolocate-control { position: absolute; top: 100px; left: 5px; } .geolocate-button { width: 32px; height: 32px; cursor: pointer; }';
 document.head.appendChild(style);
