@@ -243,7 +243,7 @@ function addSchools(schoolsData) {
       var coordinates = feature.getGeometry().getCoordinates();
       var schoolName = feature.get('name');
       var content = document.createElement('div');
-      content.innerHTML = '<p>School: ' + schoolName + '</p><button>Show Directions on Google</button><button class="popup-closer">X</button>';
+      content.innerHTML = '<p>School: ' + schoolName + '</p><button>Show Direction on Google Maps</button><button class="popup-closer">X</button>';
       var popup = new ol.Overlay({
         element: content,
         positioning: 'bottom-center',
