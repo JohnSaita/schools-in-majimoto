@@ -243,7 +243,7 @@ function addSchools(schoolsData) {
       var coordinates = feature.getGeometry().getCoordinates();
       var schoolName = feature.get('name');
       var content = document.createElement('div');
-      content.innerHTML = '<p>School: ' + schoolName + '</p><button>Show Directions on GoogleMaps</button>';
+      content.innerHTML = '<p>School: ' + schoolName + '</p><button>Show Directions on Google</button><button class="popup-closer">X</button>';
       var popup = new ol.Overlay({
         element: content,
         positioning: 'bottom-center',
@@ -252,6 +252,10 @@ function addSchools(schoolsData) {
       });
       map.addOverlay(popup);
       popup.setPosition(coordinates);
+       // Add event listener for closer button
+    content.querySelector('.popup-closer').addEventListener('click', function() {
+      map.removeOverlay(popup);
+    });
       content.querySelector('button').addEventListener('click', function() {
         openDirections(coordinates, schoolName);
       });
