@@ -131,24 +131,73 @@ var schoolsData = {
 // Add schools to the map
 addSchools(schoolsData);
 
-// Example event listener for clicking on a school
-map.on('click', function(evt) {
-  map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-    var schoolCoordinates = feature.getGeometry().getCoordinates();
-    var schoolName = feature.get('name'); // Assuming you have stored the school name in a property
-    redirectToGoogleMaps(schoolCoordinates, schoolName);
+// Function to add user location as a blue dot on the map
+function addUserLocation(position) {
+  var userLocation = ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude]);
+  map.getView().setCenter(userLocation);
+  var userMarker = new ol.Feature({
+    geometry: new ol.geom.Point(userLocation)
   });
-});
-
-// Function to redirect to Google Maps for directions
-function redirectToGoogleMaps(coordinates, destinationName) {
-  var [longitude, latitude] = ol.proj.toLonLat(coordinates);
-
-  // Constructing Google Maps directions URL
-  var googleMapsURL = 'https://www.google.com/maps/dir/?api=1';
-  googleMapsURL += '&destination=' + latitude + ',' + longitude;
-  googleMapsURL += '&destination_place_id=' + destinationName;
-
-  // Open Google Maps in a new tab
-  window.open(googleMapsURL, '_blank');
+  userMarker.setStyle(new ol.style.Style({
+    image: new ol.style.Circle({
+      radius: 6,
+      fill: new ol.style.Fill({ color: 'blue' }),
+      stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+    })
+  }));
+  var userMarkerSource = new ol.source.Vector({
+    features: [userMarker]
+  });
+  var userMarkerLayer = new ol.layer.Vector({
+    source: userMarkerSource
+  });
+  map.addLayer(userMarkerLayer);
 }
+
+// Flag to track if user's location has been retrieved
+var userLocationRetrieved = false;
+
+// Function to handle geolocation
+function handleGeolocation() {
+  // Check if geolocation is supported and user's location has not been retrieved yet
+  if ("geolocation" in navigator && !userLocationRetrieved) {
+    // Get user's current position
+    navigator.geolocation.getCurrentPosition(function(position) {
+      addUserLocation(position);
+      userLocationRetrieved = true;
+    }, function(error) {
+      console.error('Error getting user location:', error);
+      alert('Error getting user location. Please make sure you have allowed location access.');
+    });
+  } else if (userLocationRetrieved) {
+    // Center map on user's location if it has been retrieved already
+    var userLayer = map.getLayers().getArray().find(layer => layer.get('name') === 'userLayer');
+    if (userLayer) {
+      var userSource = userLayer.getSource();
+      var userFeatures = userSource.getFeatures();
+      if (userFeatures.length > 0) {
+        var userGeometry = userFeatures[0].getGeometry();
+        map.getView().setCenter(userGeometry.getCoordinates());
+      }
+    }
+  } else {
+    alert('Geolocation is not supported by your browser');
+  }
+}
+
+// Add a button to the control for geolocation
+var geolocateButton = document.createElement('img');
+geolocateButton.src = './images/location.png'; // Replace with the URL of your PNG image
+geolocateButton.className = 'geolocate-button';
+geolocateButton.addEventListener('click', handleGeolocation);
+
+// Add the button to the map's control
+var geolocateControl = document.createElement('div');
+geolocateControl.className = 'ol-control geolocate-control ol-unselectable ol-control';
+geolocateControl.appendChild(geolocateButton);
+map.addControl(new ol.control.Control({element: geolocateControl}));
+
+// Styling for the button
+var style = document.createElement('style');
+style.textContent = '.geolocate-control { position: absolute; top: 64px; left: 5px; } .geolocate-button { width: 32px; height: 32px; cursor: pointer; }';
+document.head.appendChild(style);
